@@ -1,0 +1,5 @@
+# in separate window, start db
+mongod --dbpath data/
+
+# start node
+nodemon app.js
