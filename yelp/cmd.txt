@@ -3,3 +3,11 @@ mongod --dbpath data/
 
 # start node
 nodemon app.js
+
+# show/drop db in mongo console
+mongo
+> show dbs
+> use yelp_camp
+> db.campgrounds.find()
+> db.campgrounds.drop()
+
