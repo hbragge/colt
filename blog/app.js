@@ -10,7 +10,7 @@ var blogSchema = new mongoose.Schema({
     created: {type: Date, default: Date.now}
 });
 
-mongoose.connect("mongodb://localhost/blog_app");
+mongoose.connect("mongodb://localhost:27017/blog_app", {useNewUrlParser: true});
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({extended: true}));
@@ -36,6 +36,17 @@ app.get("/blogs", function(req, res) {
             console.log(err);
         } else {
             res.render("index", {blogs: blogs});
+        }
+    });
+});
+
+// show
+app.get("/blogs/:id", function(req, res) {
+    Blog.findById(req.params.id, function(err, blog) {
+        if (err) {
+            res.redirect("/blogs");
+        } else {
+            res.render("show", {blog: blog});
         }
     });
 });
