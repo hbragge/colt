@@ -80,6 +80,17 @@ app.put("/blogs/:id", function(req, res) {
     });
 });
 
+// delete
+app.delete("/blogs/:id", function(req, res) {
+    Blog.findByIdAndRemove(req.params.id, function(err) {
+        if (err) {
+            res.redirect("/blogs");
+        } else {
+            res.redirect("/blogs");
+        }
+    });
+});
+
 // create
 app.post("/blogs", function(req, res) {
     Blog.create(req.body.blog, function(err, newBlog) {
