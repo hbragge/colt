@@ -1,37 +1,14 @@
 var express = require("express"),
     app = express(),
     bodyParser = require("body-parser"),
-    mongoose = require("mongoose");
-
-var cgSchema = new mongoose.Schema({
-    name: String,
-    image: String,
-    desc: String
-});
+    mongoose = require("mongoose"),
+    Campground = require("./models/campground"),
+    seedDB = require("./seeds");
 
 mongoose.connect("mongodb://localhost:27017/yelp_camp", {useNewUrlParser: true});
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
-
-var Campground = mongoose.model("Campground", cgSchema);
-
-/*
-var cgs = [
-    {name: "Creek", image: "https://www.chriscampground.com/images/homepage/ChrisCmpg_01.JPG", desc: "Huge creek"},
-    {name: "Ridge", image: "https://www.chriscampground.com/images/homepage/ChrisCmpg_01.JPG", desc: "Beautiful"},
-    {name: "Valley", image: "https://www.chriscampground.com/images/homepage/ChrisCmpg_01.JPG", desc: "Amazing"},
-]
-
-cgs.forEach(function(cg) {
-    Campground.create(
-        {name: cg.name, image: cg.image, desc: cg.desc},
-        function(err, obj) {
-            if (err) {
-                console.log(err);
-            }
-        });
-});
-*/
+seedDB();
 
 app.get("/", function(req, res) {
     res.render("landing");
@@ -50,7 +27,7 @@ app.get("/campgrounds", function(req, res) {
 
 // CREATE
 app.post("/campgrounds", function(req, res) {
-    var newCg = {name: req.body.name, image: req.body.image, desc: req.body.desc};
+    var newCg = {name: req.body.name, image: req.body.image, description: req.body.description};
     Campground.create(newCg, function (err, obj) {
         if (err) {
             console.log(err);
@@ -67,7 +44,7 @@ app.get("/campgrounds/new", function(req, res) {
 
 // SHOW
 app.get("/campgrounds/:id", function(req, res) {
-    Campground.findById(req.params.id, function(err, foundCg) {
+    Campground.findById(req.params.id).populate("comments").exec(function(err, foundCg) {
         if (err) {
             console.log(err);
         } else {
