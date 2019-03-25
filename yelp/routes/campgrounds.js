@@ -14,8 +14,17 @@ router.get("/", function(req, res) {
 });
 
 // CREATE
-router.post("/", function(req, res) {
-    var newCg = {name: req.body.name, image: req.body.image, description: req.body.description};
+router.post("/", isLoggedIn, function(req, res) {
+    var author = {
+        id: req.user._id,
+        username: req.user.username
+    };
+    var newCg = {
+        name: req.body.name,
+        image: req.body.image,
+        description: req.body.description,
+        author: author
+    };
     Campground.create(newCg, function (err, obj) {
         if (err) {
             console.log(err);
@@ -26,7 +35,7 @@ router.post("/", function(req, res) {
 });
 
 // NEW
-router.get("/new", function(req, res) {
+router.get("/new", isLoggedIn, function(req, res) {
     res.render("campgrounds/new");
 });
 
@@ -40,5 +49,12 @@ router.get("/:id", function(req, res) {
         }
     });
 });
+
+function isLoggedIn(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    res.redirect("/login");
+}
 
 module.exports = router;
