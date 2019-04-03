@@ -28,11 +28,33 @@ router.post("/", isLoggedIn, function(req, res) {
 
 // NEW
 router.get("/new", isLoggedIn, function(req, res) {
-    Campground.findById(req.params.id, function(err, campground) {
+    Campground.findById(req.params.id, function(err, foundCg) {
         if (err) {
             console.log(err);
         } else {
-            res.render("comments/new", {campground: campground});
+            res.render("comments/new", {campground: foundCg});
+        }
+    });
+});
+
+// EDIT
+router.get("/:comment_id/edit", function(req, res) {
+    Comment.findById(req.params.comment_id, function(err, foundComment) {
+        if (err) {
+            console.log(err);
+        } else {
+            res.render("comments/edit", {campground_id: req.params.id, comment: foundComment});
+        }
+    });
+});
+
+// UPDATE
+router.put("/:comment_id", function(req, res) {
+    Comment.findByIdAndUpdate(req.params.comment_id, req.body.comment, function(err, updatedComment) {
+        if (err) {
+            console.log(err);
+        } else {
+            res.redirect("/campgrounds/" + req.params.id);
         }
     });
 });
