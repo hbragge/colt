@@ -1,7 +1,8 @@
 var express = require("express"),
     router = express.Router(),
     Campground = require("../models/campground"),
-    Comment = require("../models/comment");
+    Comment = require("../models/comment"),
+    mw = require("../middleware/middleware.js");
 
 // INDEX
 router.get("/", function(req, res) {
@@ -15,7 +16,7 @@ router.get("/", function(req, res) {
 });
 
 // CREATE
-router.post("/", isLoggedIn, function(req, res) {
+router.post("/", mw.isLoggedIn, function(req, res) {
     var author = {
         id: req.user._id,
         username: req.user.username
@@ -36,7 +37,7 @@ router.post("/", isLoggedIn, function(req, res) {
 });
 
 // NEW
-router.get("/new", isLoggedIn, function(req, res) {
+router.get("/new", mw.isLoggedIn, function(req, res) {
     res.render("campgrounds/new");
 });
 
@@ -52,7 +53,7 @@ router.get("/:id", function(req, res) {
 });
 
 // EDIT
-router.get("/:id/edit", isOwner, function(req, res) {
+router.get("/:id/edit", mw.isCgOwner, function(req, res) {
     Campground.findById(req.params.id, function(err, foundCg) {
         if (err) {
             res.redirect("/campgrounds");
@@ -63,7 +64,7 @@ router.get("/:id/edit", isOwner, function(req, res) {
 });
 
 // UPDATE
-router.put("/:id", isOwner, function(req, res) {
+router.put("/:id", mw.isCgOwner, function(req, res) {
     Campground.findByIdAndUpdate(req.params.id, req.body.campground, function(err, updatedCg) {
         if (err) {
             res.redirect("/campgrounds");
@@ -74,7 +75,7 @@ router.put("/:id", isOwner, function(req, res) {
 });
 
 // DESTROY
-router.delete("/:id", isOwner, function(req, res) {
+router.delete("/:id", mw.isCgOwner, function(req, res) {
     Campground.findByIdAndRemove(req.params.id, function(err, removedCg) {
         if (err) {
             console.log(err);
@@ -87,30 +88,5 @@ router.delete("/:id", isOwner, function(req, res) {
         });
     });
 });
-
-function isLoggedIn(req, res, next) {
-    if (req.isAuthenticated()) {
-        return next();
-    }
-    res.redirect("/login");
-}
-
-function isOwner(req, res, next) {
-    if (req.isAuthenticated()) {
-        Campground.findById(req.params.id, function(err, foundCg) {
-            if (err) {
-                res.redirect("back");
-            } else {
-                if (foundCg.author.id.equals(req.user._id)) {
-                    next();
-                } else {
-                    res.redirect("back");
-                }
-            }
-        });
-    } else {
-        res.redirect("back");
-    }
-}
 
 module.exports = router;
