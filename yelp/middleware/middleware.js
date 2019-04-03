@@ -3,9 +3,9 @@ var Campground = require("../models/campground"),
 
 var mwObj = {};
 
-mwObj.isCgOwner = function(req, res, next) {
+function isOwner(req, res, next, c, id_name) {
     if (req.isAuthenticated()) {
-        Campground.findById(req.params.id, function(err, foundCg) {
+        c.findById(req.params[id_name], function(err, foundCg) {
             if (err) {
                 res.redirect("back");
             } else {
@@ -21,22 +21,12 @@ mwObj.isCgOwner = function(req, res, next) {
     }
 }
 
+mwObj.isCgOwner = function(req, res, next) {
+    return isOwner(req, res, next, Campground, "id");
+}
+
 mwObj.isCommentOwner = function(req, res, next) {
-    if (req.isAuthenticated()) {
-        Comment.findById(req.params.comment_id, function(err, foundComment) {
-            if (err) {
-                res.redirect("back");
-            } else {
-                if (foundComment.author.id.equals(req.user._id)) {
-                    next();
-                } else {
-                    res.redirect("back");
-                }
-            }
-        });
-    } else {
-        res.redirect("back");
-    }
+    return isOwner(req, res, next, Comment, "comment_id");
 }
 
 mwObj.isLoggedIn = function(req, res, next) {
