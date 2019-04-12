@@ -2,7 +2,7 @@
 mongod --dbpath data/
 
 # start node
-nodemon app.js
+PORT=3000 nodemon app.js
 
 # show/drop db in mongo console
 mongo
