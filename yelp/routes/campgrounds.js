@@ -23,15 +23,16 @@ router.post("/", mw.isLoggedIn, function(req, res) {
     };
     var newCg = {
         name: req.body.name,
+        price: req.body.price,
         image: req.body.image,
         description: req.body.description,
         author: author
     };
-    Campground.create(newCg, function (err, obj) {
+    Campground.create(newCg, function (err, createdCg) {
         if (err) {
             console.log(err);
         } else {
-            res.redirect("/campgrounds");
+            res.redirect("/campgrounds/" + createdCg._id);
         }
     });
 });
