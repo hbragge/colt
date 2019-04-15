@@ -42,13 +42,19 @@ router.get("/new", mw.isLoggedIn, function(req, res) {
 
 // EDIT
 router.get("/:comment_id/edit", mw.isCommentOwner, function(req, res) {
-    Comment.findById(req.params.comment_id, function(err, foundComment) {
-        if (err) {
-            console.log(err);
-            res.redirect("back");
-        } else {
-            res.render("comments/edit", {campground_id: req.params.id, comment: foundComment});
+    Campground.findById(req.params.id, function(err, foundCg) {
+        if (err || !foundCg) {
+            req.flash("error", "Campground for this comment not found");
+            return res.redirect("back");
         }
+        Comment.findById(req.params.comment_id, function(err, foundComment) {
+            if (err) {
+                console.log(err);
+                res.redirect("back");
+            } else {
+                res.render("comments/edit", {campground_id: req.params.id, comment: foundComment});
+            }
+        });
     });
 });
 

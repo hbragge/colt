@@ -6,8 +6,8 @@ var mwObj = {};
 function isOwner(req, res, next, c, id_name) {
     if (req.isAuthenticated()) {
         c.findById(req.params[id_name], function(err, foundCg) {
-            if (err) {
-                req.flash("error", "Campground not found");
+            if (err || !foundCg) {
+                req.flash("error", "Object not found");
                 res.redirect("back");
             } else {
                 if (foundCg.author.id.equals(req.user._id)) {
