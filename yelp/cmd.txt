@@ -1,3 +1,6 @@
+# first time
+npm install
+
 # in separate window, start db
 mongod --dbpath data/
 
