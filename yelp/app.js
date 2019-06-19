@@ -15,13 +15,18 @@ var indexRoutes = require("./routes/index"),
     cgRoutes = require("./routes/campgrounds"),
     commentRoutes = require("./routes/comments");
 
-mongoose.connect("mongodb://localhost:27017/yelp_camp", {useNewUrlParser: true});
+var defaultDbUrl = "mongodb://localhost:27017/yelp_camp",
+    dbUrl = process.env.DATABASEURL || defaultDbUrl;
+
+mongoose.connect(dbUrl, {useNewUrlParser: true});
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
 app.use(methodOverride("_method"));
 app.use(flash());
-seedDB();
+if (dbUrl === defaultDbUrl) {
+    seedDB();
+}
 
 // passport config
 app.use(require("express-session")({
@@ -36,6 +41,10 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 app.use(function(req, res, next) {
+    var url = req.url.split('/');
+    if ((url.length === 2) && (url[1].length > 0)) {
+        res.locals.page = url[1];
+    }
     res.locals.currentUser = req.user;
     res.locals.error = req.flash("error");
     res.locals.success = req.flash("success");
