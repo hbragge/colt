@@ -1,6 +1,5 @@
 <% include ../partials/header %>
 
-<div class="container">
 <header class="jumbotron">
   <div class="container">
     <h1>Campgrounds</h1>
@@ -15,16 +14,14 @@
 <% campgrounds.forEach(function(cg) { %>
    <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
      <div class="card">
-       <img src="<%= cg.image %>" alt="<%= cg.name %>" class="card-img-top">
-         <div class="card-body">
-           <h5 class="card-title"><%= cg.name %></h5>
-           <a href="/campgrounds/<%= cg._id %>" class="btn btn-primary">More Info</a>
-         </div>
+       <img class="card-img-top" src="<%= cg.image %>" alt="<%= cg.name %>">
+       <div class="card-body">
+         <h5 class="card-title"><%= cg.name %></h5>
+         <a href="/campgrounds/<%= cg._id %>" class="btn btn-primary">More Info</a>
+       </div>
      </div>
    </div>
 <% }); %>
-</div>
-
 </div>
 
 <% include ../partials/footer %>
