@@ -8,7 +8,7 @@
       <div class="card mb-3">
         <img class="card-img-top" src="<%= campground.image %>" alt="<%= campground.name %>">
         <div class="card-body">
-          <p class="float-right"><%= campground.price %>/night</p>
+          <p class="float-right">$<%= campground.price %>/night</p>
           <h5 class="card-title"><%= campground.name %></h5>
           <p><em>Submitted by <%= campground.author.username %>, <%= moment(campground.createdAt).fromNow() %></em></p>
           <hr>
