@@ -10,7 +10,7 @@ function isOwner(req, res, next, c, id_name) {
                 req.flash("error", "Object not found");
                 res.redirect("back");
             } else {
-                if (foundCg.author.id.equals(req.user._id)) {
+                if (req.user.isAdmin || foundCg.author.id.equals(req.user._id)) {
                     next();
                 } else {
                     req.flash("error", "You don't have permission for this action");
