@@ -17,17 +17,16 @@ router.get("/", function(req, res) {
 
 // CREATE
 router.post("/", mw.isLoggedIn, function(req, res) {
-    var author = {
+    var newCg = req.body.campground;
+    newCg.author = {
         id: req.user._id,
         username: req.user.username
     };
-    var newCg = {
-        name: req.body.name,
-        price: req.body.price,
-        image: req.body.image,
-        description: req.body.description,
-        author: author
-    };
+    if (!newCg.name) {
+        req.flash("error", "Campground name not provided");
+        res.redirect("/campgrounds");
+        return;
+    }
     Campground.create(newCg, function (err, createdCg) {
         if (err) {
             console.log(err);

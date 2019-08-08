@@ -1,7 +1,8 @@
 var express = require("express"),
     router = express.Router(),
     passport = require("passport"),
-    User = require("../models/user");
+    User = require("../models/user"),
+    Campground = require("../models/campground");
 
 router.get("/", function(req, res) {
     res.render("landing");
@@ -12,8 +13,14 @@ router.get("/register", function(req, res) {
 });
 
 router.post("/register", function(req, res) {
-    var newUser = new User({username: req.body.username});
-    if (req.body.adminCode === "secret123") {
+    var newUser = req.body.user;
+    newUser.username = req.body.username;
+    if (!newUser.username) {
+        req.flash("error", "Username not provided");
+        res.redirect("/register");
+        return;
+    }
+    if (newUser.adminCode === "secret123") {
         newUser.isAdmin = true;
     }
     User.register(newUser, req.body.password, function(err, user) {
@@ -44,6 +51,25 @@ router.get("/logout", function(req, res) {
     req.logout();
     req.flash("success", "Logged out");
     res.redirect("/campgrounds");
+});
+
+// user profile
+router.get("/users/:id", function(req, res) {
+    User.findById(req.params.id, function(err, foundUser) {
+        if (err || !foundUser) {
+            req.flash("error", "Could not find user");
+            res.redirect("/campgrounds");
+            return;
+        }
+        Campground.find().where("author.id").equals(foundUser._id).exec(function(cgErr, foundCgs) {
+            if (cgErr) {
+                req.flash("error", "Error when finding campgrounds");
+                res.redirect("/campgrounds");
+                return;
+            }
+            res.render("users/show", {user: foundUser, campgrounds: foundCgs});
+        });
+    });
 });
 
 module.exports = router;
