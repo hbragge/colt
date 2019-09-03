@@ -23,10 +23,6 @@
       </div>
       <div class="card">
         <div class="card-body">
-          <div class="text-right">
-            <p><a class="btn btn-success" href="/campgrounds/<%= campground._id %>/comments/new">Add New Comment</a></p>
-          </div>
-          <hr>
           <div class="row">
           <% campground.comments.forEach(function(comment) { %>
             <div class="col-md-12 mb-2">
@@ -52,6 +48,22 @@
             </div>
           <% }); %>
           </div>
+          <hr>
+          <form class="form-comments" action="/campgrounds/<%= campground._id %>/comments" method="POST">
+            <div class="card border-0">
+              <div class="card-body">
+                <div class="row">
+                  <div class="card mr-3">
+                    <input class="form-control" type="text" name="comment[text]" placeholder="text" required>
+                  </div>
+                  <div class="card">
+                    <button class="btn btn-lg btn-primary btn-block">Submit comment</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+
         </div>
       </div>
       <a href="/campgrounds">Back</a>
