@@ -6,7 +6,12 @@ var express = require("express"),
 
 // INDEX
 router.get("/", function(req, res) {
-    Campground.find({}, function(err, cgs) {
+    var query = {};
+    if (req.query.search) {
+        const regex = new RegExp(escapeRegex(req.query.search), 'gi');
+        query = {name: regex};
+    }
+    Campground.find(query, function(err, cgs) {
         if (err) {
             console.log(err);
         } else {
@@ -89,5 +94,9 @@ router.delete("/:id", mw.isCgOwner, function(req, res) {
         });
     });
 });
+
+function escapeRegex(text) {
+    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+};
 
 module.exports = router;
