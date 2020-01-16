@@ -2,6 +2,7 @@ var express = require("express"),
     router = express.Router(),
     Campground = require("../models/campground"),
     Comment = require("../models/comment"),
+    Review = require("../models/review"),
     mw = require("../middleware/middleware.js");
 
 // INDEX
@@ -48,7 +49,10 @@ router.get("/new", mw.isLoggedIn, function(req, res) {
 
 // SHOW
 router.get("/:id", function(req, res) {
-    Campground.findById(req.params.id).populate("comments").exec(function(err, foundCg) {
+    Campground.findById(req.params.id).populate("comments").populate({
+        path: "reviews",
+        options: {sort: {createdAt: -1}}
+    }).exec(function(err, foundCg) {
         if (err || !foundCg) {
             req.flash("error", "Campground not found");
             res.redirect("back");
@@ -71,6 +75,7 @@ router.get("/:id/edit", mw.isCgOwner, function(req, res) {
 
 // UPDATE
 router.put("/:id", mw.isCgOwner, function(req, res) {
+    delete req.body.campground.rating; // security measure
     Campground.findByIdAndUpdate(req.params.id, req.body.campground, function(err, updatedCg) {
         if (err) {
             res.redirect("/campgrounds");
@@ -90,7 +95,13 @@ router.delete("/:id", mw.isCgOwner, function(req, res) {
             if (err) {
                 console.log(err);
             }
-            res.redirect("/campgrounds");
+            Review.deleteMany({_id: { $in: removedCg.reviews } }, function(err) {
+                if (err) {
+                    console.log(err);
+                }
+                req.flash("success", "Campground deleted");
+                res.redirect("/campgrounds");
+            });
         });
     });
 });

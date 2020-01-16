@@ -14,7 +14,8 @@ var express = require("express"),
 
 var indexRoutes = require("./routes/index"),
     cgRoutes = require("./routes/campgrounds"),
-    commentRoutes = require("./routes/comments");
+    commentRoutes = require("./routes/comments"),
+    reviewRoutes = require("./routes/reviews");
 
 var defaultDbUrl = "mongodb://localhost:27017/yelp_camp",
     dbUrl = process.env.DATABASEURL || defaultDbUrl;
@@ -56,6 +57,7 @@ app.use(function(req, res, next) {
 app.use(indexRoutes);
 app.use("/campgrounds", cgRoutes);
 app.use("/campgrounds/:id/comments", commentRoutes);
+app.use("/campgrounds/:id/reviews", reviewRoutes);
 
 app.listen(process.env.PORT, process.env.IP, function() {
     console.log("app has started on port " + process.env.PORT);
